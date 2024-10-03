@@ -12,15 +12,14 @@ mp_draw = mp.solutions.drawing_utils
 
 # Constants for hand waving detection
 TIME_LIMIT = 1  # Max time for movement in one direction
-RETURN_TOLERANCE = 30  # Tolerance to determine if hand returns to initial position
 WAVE_COUNT = 2  # Number of back and forth movements to consider it a wave
 BUFFER_SIZE = 40  # Buffer size to track hand movements
 VISIBILITY_THRESHOLD = 0.5
 
 
 # Buffer for storing x-positions and time for each hand
-hand_buffer_right = []
-hand_buffer_left = []
+hand_buffers_right = []
+hand_buffers_left = []
 
 initial_positions = {
     'left': None,
@@ -52,7 +51,7 @@ def is_within_proximity(wrist_x, wrist_y, shoulder_x, shoulder_y,proximity_thres
 
 
 def waving_detection(hand_buffer, noise_threshold, min_distance, which_hand):
-    
+    global hand_buffers_left, hand_buffers_right
     wave_count = 0
     last_direction = 0  # 1 for right, -1 for left
     last_position_before_direction_change = hand_buffer[0]
@@ -80,7 +79,13 @@ def waving_detection(hand_buffer, noise_threshold, min_distance, which_hand):
                 last_direction = direction
                 last_position_before_direction_change = current_position
                 movement_start_time = current_time  # Update start time
+            else:
+                if which_hand is 'left':
+                    hand_buffers_left = []
+                else:
+                    hand_buffers_right = []
             print(f"Wave count for {which_hand} hand: {wave_count}")
+
 
         # Check if hand returns to initial position and completes the wave
         if wave_count >= WAVE_COUNT:
@@ -128,9 +133,9 @@ while cap.isOpened():
         left_shoulder_y = int(left_shoulder.y *h)
 
         shoulder_distance = abs(right_shoulder_x - left_shoulder_x)
-        proximity_threshold = shoulder_distance * 0.75
-        noise_threshold = shoulder_distance * 0.05   #IMPORTANT PARAMETER
-        min_distance = shoulder_distance * 0.1
+        proximity_threshold = shoulder_distance * 0.8
+        noise_threshold = shoulder_distance * 0.01   #IMPORTANT PARAMETER
+        min_distance = shoulder_distance * 0.020
         # Check if wrists are within proximity of their respective shoulders
         if is_within_proximity(right_wrist_x, right_wrist_y, right_shoulder_x, right_shoulder_y, proximity_threshold, right_visibility, "right"):
             movement_initialized['right'] = True
@@ -155,9 +160,11 @@ while cap.isOpened():
         if len(hand_buffers_right) > 1:
             if waving_detection(hand_buffers_right, noise_threshold, min_distance, 'right'):
                 cv2.putText(frame, 'RIGHT: WELCOME!', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4)
+
         elif len(hand_buffers_left) > 1:
             if waving_detection(hand_buffers_left, noise_threshold, min_distance, 'left'):
                 cv2.putText(frame, 'LEFT: WELCOME!', (300, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4)
+
 
 
     # Display the frame
