@@ -2,8 +2,7 @@ import socket
 import os
 import pygame
 from gtts import gTTS
-from gemini_config import configure_gemini
-from config import BASE_PATH
+from chan_gemini_config import configure_gemini
 
 # Configure the Google Generative AI
 generative_model = configure_gemini()
@@ -58,9 +57,9 @@ class GeminiChat:
 
     def run(self):
         # Welcome message
-        welcome_message = "Welcome to Airost!"
+        welcome_message = "Welcome! How can I assist you today?"
         self.speak(welcome_message)
-        print("Gemini: Welcome to Airost!")
+        print("Gemini: Welcome! How can I assist you today?")
 
         while not self.conversation_over:
             user_input = input("You: ")  # Get user input from the terminal
@@ -72,22 +71,12 @@ class GeminiChat:
                 self.speak(farewell_message)
                 break
 
-            # Generate response using Gemini model, using the detailed prompt
-            detailed_prompt = (
-                "If the input is NOT about Airost, then aswer without referring to following prompt. Just answer normally, like greeting"
-                "Gemini you are now representing to promote Airost, which is a robotic club to the new students, limit your answer into 20 to 30 words at most."
-                "What is Airost? Airost is a student club in UTM that promotes collaboration between students, "
-                "industries, and universities in AI, Robotics, and IoT. Airost provides a platform for students to discover their "
-                "interest and talents in engineering, technology, and entrepreneurship"
-                "Our adviser is AP. DR. Yeong Che Fai, and we have won numerous achievements in competitions such as the "
-                "Huawei Malaysia Sales Elite Challenge, PYDC’s AR Competition, Robocup Open Japan 2023, and more."
-            )
-            bot_response = self.generate_gemini_response(detailed_prompt)
+            # Generate response using Gemini model
+            bot_response = self.generate_gemini_response(user_input)
 
             if bot_response:
                 print(f"Gemini: {bot_response}")
                 self.speak(bot_response)
-                self.speak("Do u have any other questions bae?")
             else:
                 error_message = "I didn't quite understand that. Could you please repeat?"
                 print(f"Gemini: {error_message}")
