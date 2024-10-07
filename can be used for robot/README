@@ -1,3 +1,10 @@
 file with "config" is finalized already, no need to be turned into ros
 full_version_beta can do sr, but havent been tested yet
 for input via typing question only without, chan_gemini.py is used.
+
+
+how to link these files:
+1. turn chan_full_version and hand_waving.py into ros2
+2. these 2 files are one-time instead of constantly running (no ros spin)
+3. run hand_waving.py, if it detect hand waving, then it initiate the chan_full_version
+4. chan_full_version starts conversation with the user, after user say goodbye, it initiate the hand_waving.py again before ended.
