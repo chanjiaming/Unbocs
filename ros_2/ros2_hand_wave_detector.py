@@ -141,7 +141,9 @@ class HandWaveDetectionNode(Node):
         return False
 
     def initiate_next_node(self):
-        subprocess.run(["ros2", "run", "your_package_name", "chan_full_version.py"])
+        # Launch chan_full_version.py as a subprocess
+        subprocess.Popen(["python3", "/path/to/chan_full_version.py"])
+
 
 def main(args=None):
     rclpy.init(args=args)
